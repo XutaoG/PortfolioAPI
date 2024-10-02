@@ -1,25 +1,32 @@
-using System.Security.Cryptography.Xml;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Data;
 using Portfolio.API.Model;
-using Portfolio.API.Update.DTO;
 
 namespace Portfolio.API.Repositories
 {
 	public class CloudinaryImageRepository : IImageRepository
 	{
-		private string cloudinaryApiKey = "173258148961322";
-		private string cloudinaryApiSecret = "vdLmHtb5umaLoVvYX40vB30eI40";
-		private string cloudName = "dd5vwykwi";
+		// private readonly string cloudinaryApiKey;
+		// private readonly string cloudinaryApiSecret;
+		// private readonly string cloudName;
 
 		private readonly PortfolioDbContext dbContext;
 		private readonly Cloudinary cloudinary;
 
-		public CloudinaryImageRepository(PortfolioDbContext dbContext)
+		public CloudinaryImageRepository(
+			PortfolioDbContext dbContext, // Inject DbContext
+			IConfiguration config // Inject configuration
+			)
 		{
 			this.dbContext = dbContext;
+
+			// Read secrets from config
+			string cloudinaryApiKey = (string)config.GetValue(typeof(string), "CloudinaryApiKey")!;
+			string cloudinaryApiSecret = (string)config.GetValue(typeof(string), "CloudinaryApiSecret")!;
+			string cloudName = (string)config.GetValue(typeof(string), "CloudinaryCloudName")!;
+
 			this.cloudinary = new Cloudinary($"cloudinary://{cloudinaryApiKey}:{cloudinaryApiSecret}@{cloudName}");
 		}
 
